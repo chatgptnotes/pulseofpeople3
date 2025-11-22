@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Lock, Mail, ArrowLeft, AlertCircle, CheckCircle, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ArrowLeft, AlertCircle, CheckCircle, ChevronRight, Wifi, WifiOff, Database } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 // import { supabase } from '../lib/supabase'; // DEPRECATED: Using Django JWT
 import Logo from '../components/Logo';
 import { fetchDemoCredentials, type DemoCredential } from '../services/demoCredentialsService';
@@ -21,8 +22,63 @@ export default function Login() {
   const [loadingCreds, setLoadingCreds] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [databaseStatus, setDatabaseStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
+  const toast = useToast();
+
+  // Check backend and database health on component mount
+  useEffect(() => {
+    async function checkHealth() {
+      const API_BASE_URL = import.meta.env.VITE_DJANGO_API_URL || 'http://127.0.0.1:8000/api';
+
+      try {
+        console.log('[Health Check] Checking backend at:', API_BASE_URL);
+        const response = await fetch(`${API_BASE_URL}/health/`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('[Health Check] Backend response:', data);
+
+          setBackendStatus('online');
+
+          if (data.database === 'connected') {
+            setDatabaseStatus('connected');
+            console.log('[Health Check] ✓ Database connected');
+          } else {
+            setDatabaseStatus('disconnected');
+            console.warn('[Health Check] ✗ Database disconnected:', data);
+            toast.warning(
+              'Database Offline',
+              'The database is currently unavailable. Login may not work properly.'
+            );
+          }
+        } else {
+          setBackendStatus('offline');
+          setDatabaseStatus('disconnected');
+          console.error('[Health Check] Backend returned error:', response.status);
+          toast.error(
+            'Backend Offline',
+            'Cannot connect to authentication server. Please try again later.'
+          );
+        }
+      } catch (error) {
+        console.error('[Health Check] Failed to connect:', error);
+        setBackendStatus('offline');
+        setDatabaseStatus('disconnected');
+        toast.error(
+          'Connection Failed',
+          'Cannot reach the backend server. Please check your internet connection.'
+        );
+      }
+    }
+
+    checkHealth();
+  }, [toast]);
 
   // Fetch demo credentials when component mounts
   useEffect(() => {
@@ -63,25 +119,43 @@ export default function Login() {
           localStorage.setItem('auth_remember', 'true');
         }
 
-        navigate('/dashboard');
+        // Show success toast
+        toast.success('Login Successful!', 'Welcome back! Redirecting to dashboard...');
+        setSuccess('Login successful! Redirecting...');
+
+        setTimeout(() => navigate('/dashboard'), 500);
       } else {
         console.log('[Login] ✗ Authentication failed');
-        setError('Invalid email or password. Please check your credentials.');
+        const errorMsg = 'Invalid email or password. Please check your credentials.';
+        setError(errorMsg);
+        toast.error('Login Failed', errorMsg);
       }
     } catch (err: any) {
       console.error('[Login] Authentication error:', err);
 
-      // Display user-friendly error message
+      // Display user-friendly error message with toasts
       if (err.message.includes('database') || err.message.includes('503') || err.status === 503) {
-        setError('Unable to connect to database. Please ensure the database service is running and try again. If the problem persists, contact your system administrator.');
+        const errorMsg = 'Unable to connect to database. Please ensure the database service is running.';
+        setError(errorMsg + ' If the problem persists, contact your system administrator.');
+        toast.error('Database Connection Failed', errorMsg);
+        setDatabaseStatus('disconnected');
       } else if (err.message.includes('Invalid login credentials')) {
-        setError('Invalid email or password. Please check your credentials and try again.');
+        const errorMsg = 'Invalid email or password. Please check your credentials and try again.';
+        setError(errorMsg);
+        toast.error('Invalid Credentials', 'Username or password is incorrect.');
       } else if (err.message.includes('network') || err.message.includes('fetch')) {
-        setError('Unable to connect to authentication server. Please check your internet connection.');
+        const errorMsg = 'Unable to connect to authentication server. Please check your internet connection.';
+        setError(errorMsg);
+        toast.error('Network Error', 'Cannot reach the backend server.');
+        setBackendStatus('offline');
       } else if (err.message.includes('Email not confirmed')) {
-        setError('Please verify your email address before signing in.');
+        const errorMsg = 'Please verify your email address before signing in.';
+        setError(errorMsg);
+        toast.warning('Email Not Verified', errorMsg);
       } else {
-        setError(err.message || 'An error occurred during sign in. Please try again.');
+        const errorMsg = err.message || 'An error occurred during sign in. Please try again.';
+        setError(errorMsg);
+        toast.error('Login Error', errorMsg);
       }
     }
   };
@@ -360,6 +434,45 @@ export default function Login() {
               <p className="text-blue-200">
                 Access your Pulse of People dashboard
               </p>
+
+              {/* Connection Status Indicators */}
+              <div className="mt-4 flex items-center justify-center gap-4 text-xs">
+                {/* Backend Status */}
+                <div className="flex items-center gap-1.5">
+                  {backendStatus === 'checking' ? (
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                  ) : backendStatus === 'online' ? (
+                    <Wifi className="w-3.5 h-3.5 text-green-400" />
+                  ) : (
+                    <WifiOff className="w-3.5 h-3.5 text-red-400" />
+                  )}
+                  <span className={`${
+                    backendStatus === 'online' ? 'text-green-300' :
+                    backendStatus === 'offline' ? 'text-red-300' :
+                    'text-gray-300'
+                  }`}>
+                    Backend: {backendStatus === 'checking' ? 'Checking...' : backendStatus}
+                  </span>
+                </div>
+
+                {/* Database Status */}
+                <div className="flex items-center gap-1.5">
+                  {databaseStatus === 'checking' ? (
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                  ) : databaseStatus === 'connected' ? (
+                    <Database className="w-3.5 h-3.5 text-green-400" />
+                  ) : (
+                    <Database className="w-3.5 h-3.5 text-red-400" />
+                  )}
+                  <span className={`${
+                    databaseStatus === 'connected' ? 'text-green-300' :
+                    databaseStatus === 'disconnected' ? 'text-red-300' :
+                    'text-gray-300'
+                  }`}>
+                    Database: {databaseStatus === 'checking' ? 'Checking...' : databaseStatus}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
 
