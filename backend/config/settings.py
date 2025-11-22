@@ -38,7 +38,11 @@ if not DEBUG:
         'pulseofpeople.com',
         'www.pulseofpeople.com',
         'api.pulseofpeople.com',
+        '.vercel.app',  # Vercel deployment
     ])
+else:
+    # Also allow in development for testing
+    ALLOWED_HOSTS.extend(['.vercel.app', '.onrender.com'])
 
 
 # Application definition
@@ -250,7 +254,16 @@ if not DEBUG:
         'https://pulseofpeople.com',
         'https://www.pulseofpeople.com',
         'https://api.pulseofpeople.com',
+        'https://pulseofpeople3.vercel.app',  # Vercel deployment
     ])
+else:
+    # Allow Vercel preview URLs in development for testing
+    CORS_ALLOWED_ORIGINS.extend(['https://pulseofpeople3.vercel.app'])
+
+# Also allow Vercel preview deployments with regex
+CORS_ALLOWED_ORIGIN_REGEXES.extend([
+    r"^https://pulseofpeople3-[\w-]+\.vercel\.app$",  # Vercel preview deployments
+])
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -294,9 +307,45 @@ CSRF_TRUSTED_ORIGINS = config(
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': config('DJANGO_LOG_LEVEL', default='INFO'),
+        },
+        'api': {
+            'handlers': ['console'],
+            'level': config('API_LOG_LEVEL', default='INFO'),
+        },
+    },
+}
+
 if not DEBUG:
     CSRF_TRUSTED_ORIGINS.extend([
         'https://pulseofpeople.com',
         'https://www.pulseofpeople.com',
         'https://api.pulseofpeople.com',
+        'https://pulseofpeople3.vercel.app',
+        'https://*.vercel.app',
     ])
+else:
+    CSRF_TRUSTED_ORIGINS.extend(['https://pulseofpeople3.vercel.app'])
