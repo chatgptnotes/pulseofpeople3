@@ -47,3 +47,8 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 websockets==15.0.1
 yarl==1.22.0
+
+# Production server and deployment
+gunicorn==21.2.0
+whitenoise==6.7.0
+dj-database-url==2.2.0

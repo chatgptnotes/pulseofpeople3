@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +34,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lamb
 # Production domains
 if not DEBUG:
     ALLOWED_HOSTS.extend([
+        '.onrender.com',  # Render deployment
         'pulseofpeople.com',
         'www.pulseofpeople.com',
         'api.pulseofpeople.com',
@@ -61,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -100,31 +104,42 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Temporarily using SQLite for local development
 # Switch back to PostgreSQL once Supabase connection is resolved
 
-USE_SQLITE = config('USE_SQLITE', default=True, cast=bool)
-
-if USE_SQLITE:
-    # SQLite (Local Development)
+# Check if DATABASE_URL is set (production environment like Render)
+if 'DATABASE_URL' in os.environ:
+    # Production: Use DATABASE_URL from environment (Render/Heroku style)
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
 else:
-    # PostgreSQL with Supabase
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='postgres'),
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='db.iwtgbseaoztjbnvworyq.supabase.com'),
-            'PORT': config('DB_PORT', default='5432'),
-            'OPTIONS': {
-                'sslmode': config('DB_SSLMODE', default='prefer'),
-            },
+    # Development: Use SQLite or PostgreSQL based on config
+    USE_SQLITE = config('USE_SQLITE', default=True, cast=bool)
+
+    if USE_SQLITE:
+        # SQLite (Local Development)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
-    }
+    else:
+        # PostgreSQL with Supabase
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': config('DB_NAME', default='postgres'),
+                'USER': config('DB_USER', default='postgres'),
+                'PASSWORD': config('DB_PASSWORD'),
+                'HOST': config('DB_HOST', default='db.iwtgbseaoztjbnvworyq.supabase.com'),
+                'PORT': config('DB_PORT', default='5432'),
+                'OPTIONS': {
+                    'sslmode': config('DB_SSLMODE', default='prefer'),
+                },
+            }
+        }
 
 
 # Password validation
@@ -162,6 +177,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise configuration for serving static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
