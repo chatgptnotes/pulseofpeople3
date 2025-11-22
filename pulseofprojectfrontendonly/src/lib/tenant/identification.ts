@@ -145,33 +145,70 @@ export function extractTenantFromToken(token: string): string | null {
  * Tries multiple methods in order of priority
  */
 export function identifyTenant(): TenantIdentification | null {
-  // 1. Try subdomain (highest priority)
   const hostname = window.location.hostname;
-  const tenantFromSubdomain = extractTenantFromSubdomain(hostname);
-
-  if (tenantFromSubdomain) {
-    return {
-      method: 'subdomain',
-      value: hostname,
-      tenantId: tenantFromSubdomain,
-      tenantSlug: tenantFromSubdomain
-    };
-  }
-
-  // 2. Try path
   const pathname = window.location.pathname;
-  const tenantFromPath = extractTenantFromPath(pathname);
+  const isProduction = !hostname.includes('localhost') && !hostname.includes('127.0.0.1');
 
-  if (tenantFromPath) {
-    return {
-      method: 'path',
-      value: pathname,
-      tenantId: tenantFromPath,
-      tenantSlug: tenantFromPath
-    };
+  // In production, prioritize path over subdomain (for Vercel compatibility)
+  // In development, prioritize subdomain (for local testing)
+
+  if (isProduction) {
+    // Production priority: path → subdomain → localStorage
+
+    // 1. Try path first (for URLs like: pulseofpeople3.vercel.app/bjp)
+    const tenantFromPath = extractTenantFromPath(pathname);
+    if (tenantFromPath) {
+      if (import.meta.env.DEV) {
+        console.log('[Tenant Detection] Found tenant from path (production):', tenantFromPath);
+      }
+      return {
+        method: 'path',
+        value: pathname,
+        tenantId: tenantFromPath,
+        tenantSlug: tenantFromPath
+      };
+    }
+
+    // 2. Try subdomain (for custom domains like: bjp.pulseofpeople.com)
+    const tenantFromSubdomain = extractTenantFromSubdomain(hostname);
+    if (tenantFromSubdomain) {
+      return {
+        method: 'subdomain',
+        value: hostname,
+        tenantId: tenantFromSubdomain,
+        tenantSlug: tenantFromSubdomain
+      };
+    }
+  } else {
+    // Development priority: subdomain → path → localStorage
+
+    // 1. Try subdomain first (for URLs like: bjp.localhost:5173)
+    const tenantFromSubdomain = extractTenantFromSubdomain(hostname);
+    if (tenantFromSubdomain) {
+      return {
+        method: 'subdomain',
+        value: hostname,
+        tenantId: tenantFromSubdomain,
+        tenantSlug: tenantFromSubdomain
+      };
+    }
+
+    // 2. Try path
+    const tenantFromPath = extractTenantFromPath(pathname);
+    if (tenantFromPath) {
+      if (import.meta.env.DEV) {
+        console.log('[Tenant Detection] Found tenant from path (development):', tenantFromPath);
+      }
+      return {
+        method: 'path',
+        value: pathname,
+        tenantId: tenantFromPath,
+        tenantSlug: tenantFromPath
+      };
+    }
   }
 
-  // 3. Try localStorage (for development)
+  // 3. Try localStorage (fallback for both)
   const storedTenant = localStorage.getItem('tenantId');
   if (storedTenant) {
     return {
@@ -183,6 +220,9 @@ export function identifyTenant(): TenantIdentification | null {
   }
 
   // 4. No tenant identified
+  if (import.meta.env.DEV) {
+    console.log('[Tenant Detection] No tenant identified');
+  }
   return null;
 }
 
