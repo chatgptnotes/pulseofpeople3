@@ -6,11 +6,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true
+    host: '0.0.0.0', // Allow subdomain access
+    strictPort: false, // Allow fallback to other ports
+    cors: true
   },
   preview: {
     port: 8080,
-    host: true,
+    host: '0.0.0.0',
     allowedHosts: [
       '.railway.app',  // Allow all Railway domains
       'pulseofpeople-frontend-production.up.railway.app',
@@ -18,7 +20,8 @@ export default defineConfig({
       'tvk.pulseofpeople.com',
       'www.pulseofpeople.com',
       'localhost',
-      '127.0.0.1'
+      '127.0.0.1',
+      '.localhost' // Allow all subdomains of localhost
     ]
   }
 })
