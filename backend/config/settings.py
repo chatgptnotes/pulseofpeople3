@@ -39,10 +39,12 @@ if not DEBUG:
         'www.pulseofpeople.com',
         'api.pulseofpeople.com',
         '.vercel.app',  # Vercel deployment
+        'bachao.co',  # Custom domain
+        '.bachao.co',  # Custom domain with all subdomains
     ])
 else:
     # Also allow in development for testing
-    ALLOWED_HOSTS.extend(['.vercel.app', '.onrender.com'])
+    ALLOWED_HOSTS.extend(['.vercel.app', '.onrender.com', 'bachao.co', '.bachao.co'])
 
 
 # Application definition
@@ -255,14 +257,21 @@ if not DEBUG:
         'https://www.pulseofpeople.com',
         'https://api.pulseofpeople.com',
         'https://pulseofpeople3.vercel.app',  # Vercel deployment
+        'https://bachao.co',  # Custom domain
+        'https://www.bachao.co',
     ])
 else:
     # Allow Vercel preview URLs in development for testing
-    CORS_ALLOWED_ORIGINS.extend(['https://pulseofpeople3.vercel.app'])
+    CORS_ALLOWED_ORIGINS.extend([
+        'https://pulseofpeople3.vercel.app',
+        'https://bachao.co',
+        'https://www.bachao.co'
+    ])
 
-# Also allow Vercel preview deployments with regex
+# Also allow Vercel preview deployments with regex and custom domain subdomains
 CORS_ALLOWED_ORIGIN_REGEXES.extend([
     r"^https://pulseofpeople3-[\w-]+\.vercel\.app$",  # Vercel preview deployments
+    r"^https://[\w-]+\.bachao\.co$",  # Custom domain subdomains (bjp.bachao.co, tvk.bachao.co, etc.)
 ])
 
 CORS_ALLOW_CREDENTIALS = True
@@ -346,6 +355,13 @@ if not DEBUG:
         'https://api.pulseofpeople.com',
         'https://pulseofpeople3.vercel.app',
         'https://*.vercel.app',
+        'https://bachao.co',
+        'https://www.bachao.co',
+        'https://*.bachao.co',
     ])
 else:
-    CSRF_TRUSTED_ORIGINS.extend(['https://pulseofpeople3.vercel.app'])
+    CSRF_TRUSTED_ORIGINS.extend([
+        'https://pulseofpeople3.vercel.app',
+        'https://bachao.co',
+        'https://www.bachao.co'
+    ])

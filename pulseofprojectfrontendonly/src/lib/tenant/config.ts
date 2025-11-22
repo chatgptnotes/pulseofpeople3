@@ -99,13 +99,28 @@ export async function fetchTenantConfig(tenantSlug: string): Promise<TenantConfi
  * This is the main function to use
  */
 export async function loadTenantConfig(tenantSlug: string): Promise<TenantConfig> {
-  const config = await fetchTenantConfig(tenantSlug);
+  try {
+    const config = await fetchTenantConfig(tenantSlug);
 
-  if (!config) {
+    if (!config) {
+      throw new Error(`Tenant configuration not found for: ${tenantSlug}`);
+    }
+
+    return config;
+  } catch (error) {
+    // Fallback to mock tenant configuration if API fails
+    console.warn(`[TenantConfig] API failed, falling back to mock config for: ${tenantSlug}`);
+    console.error('[TenantConfig] Error:', error);
+
+    const mockConfig = getMockTenantConfig(tenantSlug);
+    if (mockConfig) {
+      console.log(`[TenantConfig] Using mock configuration for: ${tenantSlug}`);
+      return mockConfig;
+    }
+
+    // If no mock config exists, throw error
     throw new Error(`Tenant configuration not found for: ${tenantSlug}`);
   }
-
-  return config;
 }
 
 /**
@@ -129,10 +144,173 @@ export async function preloadTenantConfigs(tenantSlugs: string[]): Promise<void>
 }
 
 /**
- * Get mock tenant configuration for development
+ * Get mock tenant configuration for development/fallback
  */
-function getMockTenantConfig(tenantSlug: string): TenantConfig {
+function getMockTenantConfig(tenantSlug: string): TenantConfig | null {
   const configs: Record<string, TenantConfig> = {
+    // BJP - Bharatiya Janata Party
+    'bjp': {
+      id: 'mock-bjp',
+      slug: 'bjp',
+      name: 'BJP Delhi',
+      displayName: 'BJP Delhi',
+      subdomain: 'bjp',
+      customDomain: null,
+      status: 'active',
+      subscriptionStatus: 'active',
+      subscriptionTier: 'premium',
+      branding: {
+        primaryColor: '#FF9933',
+        secondaryColor: '#138808',
+        logo: '/assets/images/bjp-logo.png',
+        theme: 'saffron',
+        heroTitle: 'BJP Delhi - Win Elections with Data-Driven Intelligence',
+        motto: 'Sabka Saath, Sabka Vikas, Sabka Vishwas, Sabka Prayas'
+      },
+      landingPageConfig: {
+        heroTitle: 'BJP Delhi',
+        heroSubtitle: 'Win Elections with Data-Driven Intelligence',
+        heroDescription: 'Pulse of People combines real-time voter sentiment analysis, AI-powered campaign insights, and comprehensive political intelligence to help you make informed decisions and win elections.',
+        features: [
+          { title: 'SOC 2 Type 2 Certified', icon: 'verified_user' },
+          { title: '99.9% Uptime', icon: 'cloud_done' },
+          { title: '24/7 Support', icon: 'support_agent' },
+          { title: '500+ Campaigns', icon: 'campaign' }
+        ]
+      },
+      features: {
+        analytics: true,
+        surveys: true,
+        fieldReports: true,
+        socialMedia: true,
+        volunteerManagement: true,
+        boothManagement: true,
+        digitalCampaigning: true
+      },
+      config: {
+        state: 'Delhi',
+        districts: ['North Delhi', 'South Delhi', 'East Delhi', 'West Delhi', 'Central Delhi', 'New Delhi', 'North East Delhi'],
+        partySymbol: 'lotus',
+        electionYear: '2025'
+      },
+      metadata: {
+        party_name: 'Bharatiya Janata Party',
+        party_symbol: 'lotus',
+        party_color: '#FF9933'
+      },
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey
+    },
+
+    // TVK - Tamilaga Vettri Kazhagam
+    'tvk': {
+      id: 'mock-tvk',
+      slug: 'tvk',
+      name: 'TVK Tamil Nadu',
+      displayName: 'TVK - Tamilaga Vettri Kazhagam',
+      subdomain: 'tvk',
+      customDomain: null,
+      status: 'active',
+      subscriptionStatus: 'active',
+      subscriptionTier: 'premium',
+      branding: {
+        primaryColor: '#dc2626',
+        secondaryColor: '#fbbf24',
+        logo: '/assets/images/tvk-logo.png',
+        theme: 'red-yellow',
+        heroTitle: 'TVK - Building Progressive Tamil Nadu',
+        motto: 'Pirappokkum Ella Uyirkkum - All Lives are Equal by Birth'
+      },
+      landingPageConfig: {
+        heroTitle: 'TVK Tamil Nadu',
+        heroSubtitle: 'Building Progressive Tamil Nadu',
+        heroDescription: 'Pulse of People combines real-time voter sentiment analysis, AI-powered campaign insights, and comprehensive political intelligence to help you make informed decisions and win elections.',
+        features: [
+          { title: 'SOC 2 Type 2 Certified', icon: 'verified_user' },
+          { title: '99.9% Uptime', icon: 'cloud_done' },
+          { title: '24/7 Support', icon: 'support_agent' },
+          { title: '500+ Campaigns', icon: 'campaign' }
+        ]
+      },
+      features: {
+        analytics: true,
+        surveys: true,
+        fieldReports: true,
+        socialMedia: true,
+        volunteerManagement: true,
+        boothManagement: true,
+        digitalCampaigning: true
+      },
+      config: {
+        state: 'Tamil Nadu',
+        districts: ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Erode', 'Vellore', 'Thoothukudi', 'Thanjavur'],
+        partySymbol: 'rising-sun',
+        electionYear: '2026'
+      },
+      metadata: {
+        party_name: 'Tamilaga Vettri Kazhagam',
+        party_symbol: 'rising-sun',
+        party_color: '#dc2626'
+      },
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey
+    },
+
+    // Congress - Indian National Congress
+    'congress': {
+      id: 'mock-congress',
+      slug: 'congress',
+      name: 'Congress Karnataka',
+      displayName: 'Indian National Congress - Karnataka',
+      subdomain: 'congress',
+      customDomain: null,
+      status: 'active',
+      subscriptionStatus: 'active',
+      subscriptionTier: 'premium',
+      branding: {
+        primaryColor: '#0066CC',
+        secondaryColor: '#FFFFFF',
+        logo: '/assets/images/congress-logo.png',
+        theme: 'blue-white',
+        heroTitle: 'Congress Karnataka - Together We Can',
+        motto: 'Jai Hind'
+      },
+      landingPageConfig: {
+        heroTitle: 'Congress Karnataka',
+        heroSubtitle: 'Win Elections with Data-Driven Intelligence',
+        heroDescription: 'Pulse of People combines real-time voter sentiment analysis, AI-powered campaign insights, and comprehensive political intelligence to help you make informed decisions and win elections.',
+        features: [
+          { title: 'SOC 2 Type 2 Certified', icon: 'verified_user' },
+          { title: '99.9% Uptime', icon: 'cloud_done' },
+          { title: '24/7 Support', icon: 'support_agent' },
+          { title: '500+ Campaigns', icon: 'campaign' }
+        ]
+      },
+      features: {
+        analytics: true,
+        surveys: true,
+        fieldReports: true,
+        socialMedia: true,
+        volunteerManagement: true,
+        boothManagement: true,
+        digitalCampaigning: true
+      },
+      config: {
+        state: 'Karnataka',
+        districts: ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubli', 'Belagavi', 'Kalaburagi', 'Ballari', 'Vijayapura', 'Davanagere', 'Shivamogga'],
+        partySymbol: 'hand',
+        electionYear: '2028'
+      },
+      metadata: {
+        party_name: 'Indian National Congress',
+        party_symbol: 'hand',
+        party_color: '#0066CC'
+      },
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey
+    },
+
+    // Legacy party-a and party-b for backward compatibility
     'party-a': {
       id: 'mock-party-a',
       slug: 'tvk-tamil-nadu',
@@ -151,6 +329,7 @@ function getMockTenantConfig(tenantSlug: string): TenantConfig {
         heroTitle: 'TVK - Building Progressive Tamil Nadu',
         motto: 'Pirappokkum Ella Uyirkkum - All Lives are Equal by Birth'
       },
+      landingPageConfig: {},
       features: {
         analytics: true,
         surveys: true,
@@ -171,7 +350,9 @@ function getMockTenantConfig(tenantSlug: string): TenantConfig {
         regionalParty: true,
         founded: '2024-02-02',
         leader: 'Vijay'
-      }
+      },
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey
     },
     'party-b': {
       id: 'mock-party-b',
@@ -191,6 +372,7 @@ function getMockTenantConfig(tenantSlug: string): TenantConfig {
         heroTitle: 'BJP Tamil Nadu - Building a Stronger Tomorrow',
         motto: 'Sabka Saath, Sabka Vikas, Sabka Vishwas, Sabka Prayas'
       },
+      landingPageConfig: {},
       features: {
         analytics: true,
         surveys: true,
@@ -209,7 +391,9 @@ function getMockTenantConfig(tenantSlug: string): TenantConfig {
         partyAffiliation: 'BJP',
         nationalParty: true,
         founded: '1980-04-06'
-      }
+      },
+      supabaseUrl: supabaseUrl,
+      supabaseAnonKey: supabaseAnonKey
     }
   };
 
