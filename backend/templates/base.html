@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pulse of People - Political CRM{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        :root {
+            --superadmin-color: #dc3545;
+            --state-admin-color: #0d6efd;
+            --zone-admin-color: #198754;
+            --district-admin-color: #fd7e14;
+            --constituency-admin-color: #6f42c1;
+            --booth-admin-color: #20c997;
+            --analyst-color: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .role-badge {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .role-badge.superadmin { background: var(--superadmin-color); }
+        .role-badge.state_admin { background: var(--state-admin-color); }
+        .role-badge.zone_admin { background: var(--zone-admin-color); }
+        .role-badge.district_admin { background: var(--district-admin-color); }
+        .role-badge.constituency_admin { background: var(--constituency-admin-color); }
+        .role-badge.booth_admin { background: var(--booth-admin-color); }
+        .role-badge.analyst { background: var(--analyst-color); }
+
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            min-width: 250px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            bottom: 0;
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover {
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            padding-left: 17px;
+        }
+
+        .sidebar-menu a.active {
+            background: #e7f3ff;
+            border-left: 3px solid #0d6efd;
+            color: #0d6efd;
+            font-weight: 500;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 250px;
+            background: white;
+            padding: 10px 30px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-custom navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <span class="material-icons" style="vertical-align: middle;">dashboard</span>
+                Pulse of People
+            </a>
+
+            <!-- Role Badge (Top Right) -->
+            {% if user.is_authenticated %}
+            <div class="role-badge {{ user.profile.role }}" id="roleBadge" style="cursor: pointer;">
+                <span class="material-icons">account_circle</span>
+                <span class="role-text">
+                    {% if user.profile.role == 'superadmin' %}SuperAdmin
+                    {% elif user.profile.role == 'state_admin' %}State Admin
+                    {% elif user.profile.role == 'zone_admin' %}Zone Admin
+                    {% elif user.profile.role == 'district_admin' %}District Admin
+                    {% elif user.profile.role == 'constituency_admin' %}Constituency Admin
+                    {% elif user.profile.role == 'booth_admin' %}Booth Admin
+                    {% elif user.profile.role == 'analyst' %}Analyst
+                    {% endif %}
+                </span>
+                <span class="material-icons" style="font-size: 18px;">arrow_drop_down</span>
+            </div>
+
+            <!-- User Dropdown -->
+            <div class="user-dropdown" id="userDropdown">
+                <div style="padding-bottom: 10px; border-bottom: 1px solid #dee2e6; margin-bottom: 10px;">
+                    <strong>{{ user.username }}</strong><br>
+                    <small style="color: #6c757d;">{{ user.email }}</small>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <small style="color: #6c757d;">Role:</small><br>
+                    <strong>
+                        {% if user.profile.role == 'superadmin' %}Super Administrator
+                        {% elif user.profile.role == 'state_admin' %}State Administrator
+                        {% elif user.profile.role == 'zone_admin' %}Zone Administrator
+                        {% elif user.profile.role == 'district_admin' %}District Administrator
+                        {% elif user.profile.role == 'constituency_admin' %}Constituency Administrator
+                        {% elif user.profile.role == 'booth_admin' %}Booth Administrator
+                        {% elif user.profile.role == 'analyst' %}Analyst (Read-Only)
+                        {% endif %}
+                    </strong>
+                </div>
+
+                {% if user.profile.organization %}
+                <div style="margin-bottom: 10px;">
+                    <small style="color: #6c757d;">Organization:</small><br>
+                    <strong>{{ user.profile.organization.party_name }}</strong>
+                </div>
+                {% endif %}
+
+                {% if user.profile.assigned_state %}
+                <div style="margin-bottom: 10px;">
+                    <small style="color: #6c757d;">Geography:</small><br>
+                    <strong>{{ user.profile.assigned_state.name }}</strong>
+                    {% if user.profile.assigned_zone %}<br><small>{{ user.profile.assigned_zone.name }}</small>{% endif %}
+                </div>
+                {% endif %}
+
+                <div style="border-top: 1px solid #dee2e6; padding-top: 10px; margin-top: 10px;">
+                    <a href="/profile/" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                        <span class="material-icons" style="font-size: 16px; vertical-align: middle;">person</span>
+                        My Profile
+                    </a>
+                    <a href="/logout/" class="btn btn-sm btn-danger w-100">
+                        <span class="material-icons" style="font-size: 16px; vertical-align: middle;">logout</span>
+                        Logout
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% if user.is_authenticated %}
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            {% block sidebar %}
+            <li>
+                <a href="/dashboard/" class="active">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            {% endblock %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <!-- Footer -->
+    <div class="footer">
+        Pulse of People - Multi-Tenant Political CRM | v1.1 - 2025-11-19
+    </div>
+    {% endif %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Toggle user dropdown
+        const roleBadge = document.getElementById('roleBadge');
+        const userDropdown = document.getElementById('userDropdown');
+
+        if (roleBadge && userDropdown) {
+            roleBadge.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userDropdown.contains(e.target) && !roleBadge.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

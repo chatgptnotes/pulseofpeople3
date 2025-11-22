@@ -1,0 +1,49 @@
+Watching for file changes with StatReloader
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:45:36] "GET /api/superadmin/tenants/by-subdomain/demo/ HTTP/1.1" 200 2813
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:47:15] "GET /api/profile/me/ HTTP/1.1" 200 1002
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:47:16] "GET /api/profile/me/ HTTP/1.1" 200 1002
+[21/Nov/2025 08:47:23] "OPTIONS /api/superadmin/tenants/by-subdomain/demo/ HTTP/1.1" 200 0
+[21/Nov/2025 08:47:23] "OPTIONS /api/superadmin/tenants/by-subdomain/demo/ HTTP/1.1" 200 0
+[21/Nov/2025 08:47:31] "OPTIONS /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 0
+[21/Nov/2025 08:47:31] "OPTIONS /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 0
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:50:00] "GET /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 3053
+Method Not Allowed: /api/superadmin/tenants/by-subdomain/bjp/
+[21/Nov/2025 08:50:17] "HEAD /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 405 0
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:50:26] "GET /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 3053
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:50:43] "GET /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 3053
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:51:00] "GET /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 3053
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.
+[21/Nov/2025 08:51:07] "GET /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 3053
+[21/Nov/2025 08:51:58] "OPTIONS /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 0
+[21/Nov/2025 08:51:58] "OPTIONS /api/superadmin/tenants/by-subdomain/bjp/ HTTP/1.1" 200 0
+/Users/apple/1 imo backups/pulseofproject python 3/backend/config/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 21, 2025 - 08:45:28
+Django version 5.2.7, using settings 'config.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
+Watching for file changes with StatReloader
+WARNING:  invalid configuration parameter name "supautils.disable_program", removing it
+DETAIL:  "supautils" is now a reserved prefix.

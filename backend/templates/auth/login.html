@@ -1,0 +1,279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Pulse of People</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 50px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-weight: 500;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8b 100%);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-left">
+            <div class="login-title">
+                <span class="material-icons" style="font-size: 40px; vertical-align: middle;">how_to_vote</span>
+                Pulse of People
+            </div>
+            <div class="login-subtitle">Multi-Tenant Political CRM Platform</div>
+
+            <ul class="feature-list">
+                <li>
+                    <span class="material-icons">check_circle</span>
+                    <span>7-Level Role-Based Access Control</span>
+                </li>
+                <li>
+                    <span class="material-icons">check_circle</span>
+                    <span>Multi-Party Campaign Management</span>
+                </li>
+                <li>
+                    <span class="material-icons">check_circle</span>
+                    <span>Real-time Voter Analytics</span>
+                </li>
+                <li>
+                    <span class="material-icons">check_circle</span>
+                    <span>Geographic Hierarchy Support</span>
+                </li>
+                <li>
+                    <span class="material-icons">check_circle</span>
+                    <span>Secure Multi-Tenant Architecture</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <h3 class="mb-4">Welcome Back!</h3>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">error</span>
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'dashboard_login' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">
+                        <span class="material-icons" style="font-size: 18px; vertical-align: middle;">person</span>
+                        Username
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="username"
+                           placeholder="Enter your username"
+                           required
+                           autofocus>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">
+                        <span class="material-icons" style="font-size: 18px; vertical-align: middle;">lock</span>
+                        Password
+                    </label>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder="Enter your password"
+                           required>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-login w-100">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 5px;">login</span>
+                    Login to Dashboard
+                </button>
+
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+            </form>
+
+            <div class="footer-text">
+                <p class="mb-0">Pulse of People - Political CRM</p>
+                <p class="mb-0">v1.1 - 2025-11-19</p>
+            </div>
+
+            <!-- Demo Credentials (for testing) -->
+            <div class="mt-4" style="border-top: 1px solid #dee2e6; padding-top: 15px;">
+                <small style="color: #6c757d;">
+                    <strong>Demo Credentials:</strong><br>
+                    SuperAdmin: demo_superadmin / Demo@12345<br>
+                    State Admin: demo_state_admin / Demo@12345<br>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#credentialsModal">View all credentials</a>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credentials Modal -->
+    <div class="modal fade" id="credentialsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Demo Credentials</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-danger">SuperAdmin</span></td>
+                                <td>demo_superadmin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-primary">State Admin</span></td>
+                                <td>demo_state_admin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">Zone Admin</span></td>
+                                <td>demo_zone_admin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning">District Admin</span></td>
+                                <td>demo_district_admin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge" style="background: #6f42c1;">Constituency Admin</span></td>
+                                <td>demo_constituency_admin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-info">Booth Admin</span></td>
+                                <td>demo_booth_admin</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-secondary">Analyst</span></td>
+                                <td>demo_analyst</td>
+                                <td>Demo@12345</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

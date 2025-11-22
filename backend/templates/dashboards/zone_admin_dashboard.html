@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Zone Admin Dashboard{% endblock %}
+{% block sidebar %}
+<li><a href="/dashboard/zone-admin/" class="active"><span class="material-icons">dashboard</span> Dashboard</a></li>
+<li><a href="/dashboard/zone-admin/districts/"><span class="material-icons">place</span> Districts</a></li>
+<li><a href="/dashboard/zone-admin/create-district-admin/"><span class="material-icons">person_add</span> Create District Admin</a></li>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><span class="material-icons" style="font-size: 36px; vertical-align: middle; color: #198754;">location_city</span> Zone Admin Dashboard</h1>
+    <p class="lead text-muted">Zone: {{ user.profile.assigned_zone.name|default:"Not Assigned" }} | State: {{ user.profile.assigned_state.name|default:"Not Assigned" }}</p>
+    <div class="row mb-4">
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">Districts</div><div class="stat-number">{{ stats.total_districts|default:"0" }}</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">Constituencies</div><div class="stat-number">{{ stats.total_constituencies|default:"0" }}</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">District Admins</div><div class="stat-number">{{ stats.district_admins|default:"0" }}</div></div></div>
+    </div>
+    <div class="dashboard-card">
+        <h5>Zone Information</h5>
+        <p>Zone: <strong>{{ user.profile.assigned_zone.name|default:"Not Assigned" }}</strong></p>
+        <a href="/dashboard/zone-admin/create-district-admin/" class="btn btn-primary"><span class="material-icons" style="vertical-align: middle;">add</span> Create District Admin</a>
+    </div>
+</div>
+{% endblock %}

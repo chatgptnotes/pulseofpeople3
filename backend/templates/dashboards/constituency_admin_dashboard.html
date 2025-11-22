@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Constituency Admin Dashboard{% endblock %}
+{% block sidebar %}
+<li><a href="/dashboard/constituency-admin/" class="active"><span class="material-icons">dashboard</span> Dashboard</a></li>
+<li><a href="/dashboard/constituency-admin/booths/"><span class="material-icons">ballot</span> Polling Booths</a></li>
+<li><a href="/dashboard/constituency-admin/create-booth-admin/"><span class="material-icons">person_add</span> Create Booth Admin</a></li>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><span class="material-icons" style="font-size: 36px; vertical-align: middle; color: #6f42c1;">how_to_vote</span> Constituency Admin Dashboard</h1>
+    <p class="lead text-muted">Constituency: {{ user.profile.assigned_constituency.name|default:"Not Assigned" }}</p>
+    <div class="row mb-4">
+        <div class="col-md-6"><div class="stat-card"><div style="opacity: 0.8;">Polling Booths</div><div class="stat-number">{{ stats.total_booths|default:"0" }}</div></div></div>
+        <div class="col-md-6"><div class="stat-card"><div style="opacity: 0.8;">Booth Admins</div><div class="stat-number">{{ stats.booth_admins|default:"0" }}</div></div></div>
+    </div>
+    <div class="dashboard-card">
+        <h5>Constituency Information</h5>
+        <p>Constituency: <strong>{{ user.profile.assigned_constituency.name|default:"Not Assigned" }}</strong></p>
+        <a href="/dashboard/constituency-admin/create-booth-admin/" class="btn btn-primary"><span class="material-icons" style="vertical-align: middle;">add</span> Create Booth Admin</a>
+    </div>
+</div>
+{% endblock %}

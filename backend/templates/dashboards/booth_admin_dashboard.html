@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Booth Admin Dashboard{% endblock %}
+{% block sidebar %}
+<li><a href="/dashboard/booth-admin/" class="active"><span class="material-icons">dashboard</span> Dashboard</a></li>
+<li><a href="/dashboard/booth-admin/voters/"><span class="material-icons">people</span> Voters</a></li>
+<li><a href="/dashboard/booth-admin/create-analyst/"><span class="material-icons">person_add</span> Create Analyst</a></li>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><span class="material-icons" style="font-size: 36px; vertical-align: middle; color: #20c997;">ballot</span> Booth Admin Dashboard</h1>
+    <p class="lead text-muted">Booth: #{{ user.profile.assigned_booth.booth_number|default:"Not Assigned" }} - {{ user.profile.assigned_booth.name|default:"" }}</p>
+    <div class="row mb-4">
+        <div class="col-md-6"><div class="stat-card"><div style="opacity: 0.8;">Total Voters</div><div class="stat-number">{{ stats.total_voters|default:"0" }}</div></div></div>
+        <div class="col-md-6"><div class="stat-card"><div style="opacity: 0.8;">Analysts</div><div class="stat-number">{{ stats.analysts|default:"0" }}</div></div></div>
+    </div>
+    <div class="dashboard-card">
+        <h5>Booth Information</h5>
+        <p>Booth: <strong>{{ user.profile.assigned_booth.name|default:"Not Assigned" }}</strong></p>
+        <a href="/dashboard/booth-admin/create-analyst/" class="btn btn-primary"><span class="material-icons" style="vertical-align: middle;">add</span> Create Analyst</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Analyst Dashboard{% endblock %}
+{% block sidebar %}
+<li><a href="/dashboard/analyst/" class="active"><span class="material-icons">dashboard</span> Dashboard</a></li>
+<li><a href="/dashboard/analyst/analytics/"><span class="material-icons">analytics</span> Analytics</a></li>
+<li><a href="/dashboard/analyst/reports/"><span class="material-icons">assessment</span> Reports</a></li>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4"><span class="material-icons" style="font-size: 36px; vertical-align: middle; color: #6c757d;">visibility</span> Analyst Dashboard (Read-Only)</h1>
+    <p class="lead text-muted">You have read-only access to analytics and reports.</p>
+    <div class="alert alert-info"><span class="material-icons" style="vertical-align: middle;">info</span> You cannot create or modify data. Contact your admin for additional permissions.</div>
+    <div class="row mb-4">
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">Available Reports</div><div class="stat-number">{{ stats.total_reports|default:"5" }}</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">Analytics Views</div><div class="stat-number">{{ stats.total_analytics|default:"8" }}</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div style="opacity: 0.8;">Data Access Level</div><div class="stat-number" style="font-size: 18px;">READ ONLY</div></div></div>
+    </div>
+    <div class="dashboard-card">
+        <h5>Quick Links</h5>
+        <a href="/dashboard/analyst/analytics/" class="btn btn-outline-primary me-2">View Analytics</a>
+        <a href="/dashboard/analyst/reports/" class="btn btn-outline-primary">Download Reports</a>
+    </div>
+</div>
+{% endblock %}

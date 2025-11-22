@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}State Admin Dashboard{% endblock %}
+
+{% block sidebar %}
+<li><a href="/dashboard/state-admin/" class="active"><span class="material-icons">dashboard</span> Dashboard</a></li>
+<li><a href="/dashboard/state-admin/zones/"><span class="material-icons">location_city</span> Zones</a></li>
+<li><a href="/dashboard/state-admin/create-zone-admin/"><span class="material-icons">person_add</span> Create Zone Admin</a></li>
+<li><a href="/dashboard/state-admin/analytics/"><span class="material-icons">analytics</span> State Analytics</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">
+        <span class="material-icons" style="font-size: 36px; vertical-align: middle; color: #0d6efd;">location_on</span>
+        State Admin Dashboard
+    </h1>
+    <p class="lead text-muted">Managing: {% if user.profile.assigned_state %}{{ user.profile.assigned_state.name }}{% else %}Not Assigned{% endif %} | Organization: {{ user.profile.organization.party_name }}</p>
+
+    <div class="row mb-4">
+        <div class="col-md-3"><div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"><div style="opacity: 0.8;">Total Zones</div><div class="stat-number">{{ stats.total_zones|default:"0" }}</div></div></div>
+        <div class="col-md-3"><div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"><div style="opacity: 0.8;">Districts</div><div class="stat-number">{{ stats.total_districts|default:"0" }}</div></div></div>
+        <div class="col-md-3"><div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"><div style="opacity: 0.8;">Constituencies</div><div class="stat-number">{{ stats.total_constituencies|default:"0" }}</div></div></div>
+        <div class="col-md-3"><div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"><div style="opacity: 0.8;">Zone Admins</div><div class="stat-number">{{ stats.zone_admins|default:"0" }}</div></div></div>
+    </div>
+
+    <div class="dashboard-card">
+        <h5><span class="material-icons" style="vertical-align: middle;">info</span> State Information</h5>
+        <p>State: <strong>{{ user.profile.assigned_state.name|default:"Not Assigned" }}</strong></p>
+        <p>Organization: <strong>{{ user.profile.organization.party_name }}</strong></p>
+        <a href="/dashboard/state-admin/create-zone-admin/" class="btn btn-primary"><span class="material-icons" style="vertical-align: middle;">add</span> Create Zone Admin</a>
+    </div>
+</div>
+{% endblock %}
