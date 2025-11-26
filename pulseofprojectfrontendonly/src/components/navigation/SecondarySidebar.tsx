@@ -12,6 +12,7 @@ import {
   PushPinOutlined,
 } from '@mui/icons-material';
 import { categoryMenuItems, MenuItem } from './menuData';
+import { usePermissions } from '../../contexts/PermissionContext';
 
 interface SecondarySidebarProps {
   activeCategory: string | null;
@@ -36,10 +37,26 @@ export default function SecondarySidebar({
 }: SecondarySidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { hasPermission, isSuperAdmin } = usePermissions();
 
   if (!activeCategory) return null;
 
-  const menuItems = categoryMenuItems[activeCategory] || [];
+  const allMenuItems = categoryMenuItems[activeCategory] || [];
+
+  // Filter menu items based on user permissions
+  const menuItems = allMenuItems.filter((item) => {
+    // If no permission required, show item
+    if (!item.permission) return true;
+
+    // Check if permission is a role check (like 'superadmin')
+    if (item.permission === 'superadmin') {
+      return isSuperAdmin || hasPermission('manage_organizations');
+    }
+
+    // Otherwise check the permission directly
+    return hasPermission(item.permission as any);
+  });
+
   const categoryLabel = getCategoryLabel(activeCategory);
 
   const handleItemClick = (href: string) => {

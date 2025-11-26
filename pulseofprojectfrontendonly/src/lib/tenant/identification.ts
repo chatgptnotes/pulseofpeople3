@@ -91,17 +91,37 @@ export function extractTenantFromSubdomain(hostname: string): string | null {
   return null;
 }
 
+// Reserved paths that should not be treated as tenant slugs
+const RESERVED_PATHS = [
+  'super-admin', 'superadmin', 'admin',
+  'dashboard', 'login', 'logout', 'register', 'signup',
+  'unauthorized', 'not-found', '404', '500',
+  'settings', 'profile', 'account',
+  'api', 'auth', 'oauth', 'callback',
+  'public', 'assets', 'static',
+];
+
 /**
  * Extract tenant from URL path
  * Examples:
  *   - /kerala/dashboard → kerala
  *   - /tamilnadu/analytics → tamilnadu
+ *   - /super-admin/admins → null (reserved path)
+ *   - /dashboard → null (reserved path)
  */
 export function extractTenantFromPath(pathname: string): string | null {
   const parts = pathname.split('/').filter(Boolean);
 
   if (parts.length > 0) {
-    const potentialTenant = parts[0];
+    const potentialTenant = parts[0].toLowerCase();
+
+    // Skip if it's a reserved path
+    if (RESERVED_PATHS.includes(potentialTenant)) {
+      if (import.meta.env.DEV) {
+        console.log('[Tenant Detection] Reserved path, skipping:', potentialTenant);
+      }
+      return null;
+    }
 
     // Check if it looks like a tenant slug (lowercase, hyphens)
     if (/^[a-z0-9-]+$/.test(potentialTenant)) {

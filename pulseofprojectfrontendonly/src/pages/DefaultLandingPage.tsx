@@ -14,17 +14,9 @@ export default function DefaultLandingPage() {
       name: 'BJP',
       slug: 'bjp',
       color: '#FF9933',
-      description: 'Bharatiya Janata Party - सबका साथ, सबका विकास, सबका विश्वास',
+      description: 'Bharatiya Janata Party - Sabka Saath, Sabka Vikas',
       url: 'http://bjp.localhost:5173',
       logo: '🪷'
-    },
-    {
-      name: 'TVK',
-      slug: 'tvk',
-      color: '#FFD700',
-      description: 'Tamilaga Vettri Kazhagam - வெற்றி தமிழகத்தின் வெற்றி',
-      url: 'http://tvk.localhost:5173',
-      logo: '🔦'
     },
     {
       name: 'Demo',

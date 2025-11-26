@@ -17,7 +17,6 @@ export default defineConfig({
       '.railway.app',  // Allow all Railway domains
       'pulseofpeople-frontend-production.up.railway.app',
       'pulseofpeople.com',
-      'tvk.pulseofpeople.com',
       'www.pulseofpeople.com',
       'localhost',
       '127.0.0.1',

@@ -25,6 +25,7 @@ interface AdminDetails {
   organizationName?: string;
   stateName?: string;
   stateCode?: string;
+  subdomain?: string;
   totalTenants: number;
   activeTenants: number;
   createdAt: string;
@@ -78,8 +79,9 @@ export function AdminView() {
         organizationName: data.profile?.organization_name || '',
         stateName: data.profile?.assigned_state_name || '',
         stateCode: data.profile?.state_code || '',
-        totalTenants: 0,  // Not available in response
-        activeTenants: 0,  // Not available in response
+        subdomain: data.profile?.organization_subdomain || data.profile?.subdomain || data.subdomain || '',
+        totalTenants: data.profile?.total_tenants || 0,
+        activeTenants: data.profile?.active_tenants || 0,
         createdAt: data.date_joined || '',
         lastActive: data.last_login || '',
       };
@@ -223,6 +225,21 @@ export function AdminView() {
                 <LocationIcon className="w-4 h-4 mr-2 text-gray-400" />
                 {admin.stateName ? `${admin.stateName} (${admin.stateCode})` : 'Not assigned'}
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">Subdomain</label>
+              {admin.subdomain ? (
+                <a
+                  href={`http://${admin.subdomain}.localhost:5173`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {admin.subdomain}.localhost:5173
+                </a>
+              ) : (
+                <p className="text-gray-500">Not assigned</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">Total Tenants</label>

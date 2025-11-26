@@ -120,18 +120,75 @@ export function TenantProvider({ children, fallback, errorFallback }: TenantProv
       const identification = identifyTenant();
 
       if (!identification) {
-        // Check if this is plain localhost (will be redirected by App.tsx)
+        // Check if this is plain localhost or reserved subdomain (app.localhost, admin.localhost, etc.)
         const hostname = window.location.hostname;
+        const hostnameWithoutPort = hostname.split(':')[0];
+        const parts = hostnameWithoutPort.split('.');
+        const isLocalDev = hostname.includes('localhost') || hostname.includes('127.0.0.1');
         const isPlainLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        const isReservedSubdomain = parts.length >= 2 && ['app', 'www', 'api', 'admin', 'superadmin', 'test', 'staging', 'dev'].includes(parts[0].toLowerCase());
 
-        if (isPlainLocalhost) {
-          // Quietly return - App.tsx will handle redirect
-          console.log('[TenantContext] Plain localhost detected, skipping tenant load (will redirect)');
+        if (isPlainLocalhost || (isLocalDev && isReservedSubdomain)) {
+          // Use default single-tenant mode for plain localhost or reserved subdomains
+          console.log('[TenantContext] Plain localhost or reserved subdomain detected, using default config');
+
+          const config: TenantConfig = {
+            id: 'default',
+            slug: 'default',
+            name: 'Default Tenant',
+            displayName: 'Pulse of People',
+            supabaseUrl: import.meta.env.VITE_SUPABASE_URL || 'https://eepwbydlfecosaqdysho.supabase.co',
+            supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlcHdieWRsZmVjb3NhcWR5c2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDA3ODQsImV4cCI6MjA3ODQxNjc4NH0.Z83AOOAFPGK-xKio6fYTXwAUJEHdIlsdCxPleDtE53c',
+            supabaseRegion: 'ap-south-1',
+            contactName: '',
+            contactEmail: '',
+            subscriptionStatus: 'active',
+            subscriptionTier: 'enterprise',
+            subscriptionStart: new Date().toISOString(),
+            monthlyFee: 0,
+            currency: 'INR',
+            billingCycle: 'monthly',
+            paymentStatus: 'paid',
+            coverageArea: 'All India',
+            state: 'All India',
+            districts: [],
+            wardCount: 0,
+            expectedUsers: 1000,
+            enabledFeatures: [
+              'dashboard', 'analytics', 'field-reports', 'surveys',
+              'social-media', 'influencer-tracking', 'alerts', 'recommendations',
+              'admin-panel', 'superadmin',
+            ],
+            customSettings: {},
+            dataResidency: 'india',
+            branding: {
+              logo: '',
+              primaryColor: '#1976D2',
+              secondaryColor: '#424242',
+            },
+            maxUsers: 10000,
+            maxWards: 100000,
+            maxStorageGb: 1000,
+            maxApiCallsPerHour: 100000,
+            status: 'active',
+            isDemo: false,
+            tags: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          setTenant(config);
+          setTenantSlug('default');
+
+          const { createClient } = await import('@supabase/supabase-js');
+          const client = createClient(config.supabaseUrl, config.supabaseAnonKey);
+          setSupabase(client);
+
           setIsLoading(false);
           return;
         }
 
-        // Not plain localhost, this is a real error
+        // Not plain localhost or reserved subdomain, this is a real error
         throw new Error(
           'No tenant identified. Please access via a tenant-specific URL (e.g., kerala.pulseofpeople.com)'
         );

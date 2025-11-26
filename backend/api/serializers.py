@@ -22,6 +22,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     organization_id = serializers.IntegerField(source='organization.id', read_only=True, allow_null=True)
     organization_name = serializers.CharField(source='organization.name', read_only=True, allow_null=True)
     organization_party_name = serializers.CharField(source='organization.party_name', read_only=True, allow_null=True)
+    organization_subdomain = serializers.CharField(source='organization.subdomain', read_only=True, allow_null=True)
 
     class Meta:
         model = UserProfile
@@ -36,6 +37,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'assigned_constituency_name', 'assigned_booth_name',
             # Organization/Party
             'organization', 'organization_id', 'organization_name', 'organization_party_name',
+            'organization_subdomain',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'permissions']

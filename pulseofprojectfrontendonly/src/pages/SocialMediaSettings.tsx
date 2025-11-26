@@ -37,7 +37,6 @@ import {
   Clock,
   Shield
 } from 'lucide-react';
-import { TVKLogo } from '../components/TVKLogo';
 
 // ============================================================================
 // INTERFACES
@@ -587,10 +586,9 @@ export default function SocialMediaSettings() {
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <TVKLogo size="medium" />
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Social Media Configuration</h1>
-                <p className="text-gray-600 mt-1">Manage TVK's social media accounts, credentials, and monitoring settings</p>
+                <p className="text-gray-600 mt-1">Manage social media accounts, credentials, and monitoring settings</p>
               </div>
             </div>
             <div className="flex space-x-3">

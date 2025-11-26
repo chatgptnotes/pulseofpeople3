@@ -1,6 +1,6 @@
 /**
  * Tamil Nadu & Puducherry Configuration
- * TVK (Tamilaga Vettri Kazhagam) Election Campaign
+ * Election Campaign Reference Data
  */
 
 // Tamil Nadu Districts (38)
@@ -39,13 +39,6 @@ export const TOTAL_CONSTITUENCIES = {
 
 // Major Political Parties in Tamil Nadu
 export const TN_POLITICAL_PARTIES = {
-  TVK: {
-    name: 'Tamilaga Vettri Kazhagam',
-    shortName: 'TVK',
-    leader: 'Vijay',
-    color: '#FF6B35',
-    description: 'Tamil Nadu Victory Front'
-  },
   DMK: {
     name: 'Dravida Munnetra Kazhagam',
     shortName: 'DMK',

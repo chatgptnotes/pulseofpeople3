@@ -44,8 +44,6 @@ export default function RedirectToDefaultTenant() {
         <br />
         • <strong>bjp.localhost:5173</strong> - BJP Tenant
         <br />
-        • <strong>tvk.localhost:5173</strong> - TVK Tenant
-        <br />
         • <strong>demo.localhost:5173</strong> - Demo Tenant
       </Typography>
     </Box>
